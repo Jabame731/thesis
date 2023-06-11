@@ -1,0 +1,3 @@
+npx expo start ==> type in the terminal to run react-native
+install [ Expo Go] app on your IOS or Android phone connect to the same wireless network as your computer
+use the Expo Go app to scan the QR code from your terminal to open your project
