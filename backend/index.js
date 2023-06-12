@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 //import from routes
 import authRoutes from './routes/auth.js';
 import vehicleRoutes from './routes/vehicle.js';
+import parkingLotRoutes from './routes/parkingLot.js';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 //routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicle', vehicleRoutes);
+app.use('/api/parkingLot', parkingLotRoutes);
 
 const port = process.env.PORT;
 app.listen(port, () => {
