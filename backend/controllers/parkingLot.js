@@ -1,6 +1,6 @@
 import { connection } from '../config/db.js';
 import jwt from 'jsonwebtoken';
-import { getCurrentDate } from '../helpers/helper.js';
+import { formatDate } from '../helpers/helper.js';
 
 //create  ==> admin
 export const createParkingLot = (req, res) => {
@@ -53,7 +53,7 @@ export const updateParkingLot = (req, res) => {
       const query =
         'UPDATE `parking_lot` SET `name` = ?, `address` = ?, `capacity` =?, `updated_at` = ?  WHERE `id` = ?';
 
-      const values = [name, address, capacity, getCurrentDate()];
+      const values = [name, address, capacity, formatDate()];
 
       connection.query(query, [...values, parkingLotId], (err, _) => {
         if (err) return res.status(500).json(err);

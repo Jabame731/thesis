@@ -1,4 +1,4 @@
-export const getCurrentDate = () => {
+export const formatDate = () => {
   const now = new Date();
 
   const year = now.getFullYear();
@@ -9,7 +9,7 @@ export const getCurrentDate = () => {
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
 
-  const updatedParkingLotDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-  return updatedParkingLotDate;
+  return formattedDate;
 };
