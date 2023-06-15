@@ -1,6 +1,7 @@
 import { connection } from '../config/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { capitalizeFirstLetter } from '../helpers/helper.js';
 
 export const registerUser = (req, res) => {
   //parsed request from body data
@@ -21,9 +22,15 @@ export const registerUser = (req, res) => {
     const query =
       'INSERT INTO user (`first_name`, `last_name`, `email`, `password`, `image`) VALUES (?)';
 
-    const values = [first_name, last_name, email, hash, image];
+    const values = [
+      capitalizeFirstLetter(first_name),
+      capitalizeFirstLetter(last_name),
+      email,
+      hash,
+      image,
+    ];
 
-    connection.query(query, [values], (err, data) => {
+    connection.query(query, [values], (err, _) => {
       if (err) return res.status(500).json(err);
 
       return res.status(200).json('User is Registered');
@@ -60,7 +67,7 @@ export const loginUser = (req, res) => {
   });
 };
 
-export const logoutUser = (req, res) => {
+export const logoutUser = (_, res) => {
   res
     .clearCookie('access_token', {
       sameSite: 'none',
