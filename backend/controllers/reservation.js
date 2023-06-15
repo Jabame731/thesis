@@ -54,6 +54,91 @@ export const reserveParkingSpot = (req, res) => {
   });
 };
 
-// delete a reserved parking spot
+// to cancel a reserved parking spot
+export const cancelReservedParkingSpot = (req, res) => {
+  const token = req.cookies.access_token;
 
-// function to send a signal to the arduino
+  if (!token) return res.status(401).json;
+
+  const space_id = req.params.id;
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
+    if (err) return res.status(403).json('Token is not valid');
+
+    const selectQuery = 'SELECT * FROM reservation WHERE space_id = ?';
+
+    connection.query(selectQuery, [space_id], (err, data) => {
+      if (err) return res.status(500).json(err);
+
+      if (data.length === 0)
+        return res.status(404).json('Reservaation not found');
+
+      const deleteQuery = 'DELETE FROM reservation WHERE space_id = ?';
+
+      // Update the availability in the parking_space to available
+      const updateAvailabilityQuery =
+        'UPDATE parking_space SET availabilty = ? WHERE id = ?';
+
+      const values = ['Available', space_id];
+
+      //Query to delete the reservation
+      connection.query(deleteQuery, [space_id], (err, _) => {
+        if (err) return res.status(500).json(err);
+      });
+
+      // Query to update availability to available in the parking space
+      connection.query(updateAvailabilityQuery, values, (err, _) => {
+        if (err) res.status(500).json(err);
+
+        res.status(200).json('Reservation has been cancelled');
+      });
+    });
+  });
+};
+
+// to delete the reservation ==> admin
+export const deleteReservation = (req, res) => {
+  const token = req.cookies.access_token;
+
+  if (!token) return res.status(401).json('Not authenticated');
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  const query = 'SELECT * FROM user WHERE id = ?';
+
+  connection.query(query, [decoded.id], (err, data) => {
+    if (err) return res.status(401).json('Token not valid');
+
+    if (data[0].user_role !== 'admin') {
+      return re.status(401).json('Not authorized');
+    } else {
+      const reservation_id = req.params.id;
+
+      const query = 'SELECT * FROM reservation WHERE id = ?';
+
+      connection.query(query, [reservation_id], (err, data) => {
+        if (err) return res.status(500).json(err);
+
+        if (data.length === 0)
+          return res.status(404).json('Reservation not found');
+
+        const deleteQuery = 'DELETE FROM reservation WHERE id = ?';
+
+        const updateAvailabilityQuery =
+          'UPDATE parking_space SET availability = ? WHERE id = ?';
+
+        const values = ['Available', data[0].space_id];
+
+        connection.query(deleteQuery, [reservation_id], (err, _) => {
+          if (err) return res.status(500).json(err);
+
+          connection.query(updateAvailabilityQuery, values, (err, _) => {
+            if (err) return res.status(500).json(err);
+
+            res.status(200).json('Reservation has been deleted');
+          });
+        });
+      });
+    }
+  });
+};
