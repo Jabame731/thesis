@@ -1,6 +1,27 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import multer from 'multer';
+
+//image upload functionality
+const storage = multer.diskStorage({
+  destination: (_, _, cb) => {
+    cb(null, '../frontend/public/upload');
+  },
+  filename: (_, file, cb) => {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+
+// route for image upload
+app.post('api/upload', upload.single('file'), (req, res, next) => {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  const file = req.file;
+  res.status(200).json(file.fieldname);
+});
 
 //import from routes
 import authRoutes from './routes/auth.js';
